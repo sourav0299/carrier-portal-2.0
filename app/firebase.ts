@@ -1,4 +1,5 @@
 import { initializeApp, FirebaseApp } from "firebase/app";
+import { getFirestore } from 'firebase/firestore';
 import { getAuth, Auth } from "firebase/auth";
 
 const firebaseConfig = {
@@ -14,7 +15,6 @@ let app: FirebaseApp | undefined;
 let auth: Auth | undefined;
 
 try {
-  // Check if all required config values are present
   const requiredConfigKeys = ['apiKey', 'authDomain', 'projectId', 'appId'] as const;
   const missingKeys = requiredConfigKeys.filter(key => !firebaseConfig[key as keyof typeof firebaseConfig]);
 
@@ -31,3 +31,4 @@ try {
 }
 
 export { auth };
+export const db = getFirestore(app);

@@ -31,7 +31,7 @@ const AdminPage = () => {
 
   if (loading) return <p>Loading...</p>;
 
-  if (!user) return null; // This should not happen, but just in case
+  if (!user) return null; 
 
   return <div>Admin Page Content</div>;
 };

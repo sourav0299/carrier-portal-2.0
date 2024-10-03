@@ -1,7 +1,10 @@
-// app/page.tsx
-import JobCard from '../app/components/JobCard';  // Import the JobCard component
 
-const HomePage = () => {
+import JobCard from './components/JobCard';
+import { getJobs } from './utils/jobApis';
+
+export default async function HomePage() {
+  const jobs = await getJobs();
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Welcome to the Career Portal</h1>
@@ -9,14 +12,11 @@ const HomePage = () => {
         Find your dream job today! Browse through available positions and apply now.
       </p>
 
-      <div className="grid grid-cols-1 gap-4">
-        {/* Example Job Listings */}
-        <JobCard title="Frontend Developer" description="React, Next.js, TypeScript" salary="$80,000" />
-        <JobCard title="Backend Developer" description="Node.js, Express, MongoDB" salary="$90,000" />
-        <JobCard title="Full Stack Engineer" description="React, Node.js, TypeScript" salary="$100,000" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {jobs.map((job, index) => (
+          <JobCard key={index} {...job} />
+        ))}
       </div>
     </div>
   );
-};
-
-export default HomePage;
+}

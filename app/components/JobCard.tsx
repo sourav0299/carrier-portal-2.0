@@ -1,10 +1,11 @@
 interface JobCardProps {
+  id: string;
   title: string;
   description: string;
   salary: string;
 }
 
-const JobCard: React.FC<JobCardProps> = ({ title, description, salary }) => {
+const JobCard: React.FC<JobCardProps> = ({ id, title, description, salary }) => {
   return (
     <div className="border p-4 rounded-lg shadow-lg bg-white hover:shadow-2xl transition-shadow">
       <h2 className="text-2xl font-semibold mb-2">{title}</h2>

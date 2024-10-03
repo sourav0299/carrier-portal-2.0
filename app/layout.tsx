@@ -11,15 +11,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="en">
       <body>
-        {/* NavBar will appear on all pages */}
         <NavBar />
-
         <main className="container mx-auto p-4">
-          {/* Render the current page */}
           {children}
         </main>
-        
-        {/* You can add a footer here */}
         <footer className="text-center p-4">
           © 2024 Career Portal
         </footer>
