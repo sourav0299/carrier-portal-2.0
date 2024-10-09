@@ -4,7 +4,7 @@ import clientPromise from '../../lib/mongodb';
 export async function POST(request: Request) {
   try {
     const client = await clientPromise;
-    const db = client.db("career_portal");
+    const db = client.db("carrierportal");
     const { title, description, salary } = await request.json();
 
     const result = await db.collection("jobs").insertOne({

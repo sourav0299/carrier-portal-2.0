@@ -1,6 +1,9 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { auth } from '../firebase';
+import { User, onAuthStateChanged } from "firebase/auth";
 import JobCard from '../components/JobCard';
 import toast from 'react-hot-toast';
 
@@ -8,12 +11,39 @@ interface Job {
   id?: string;
   title: string;
   description: string;
-salary: string;
+  salary: string;
 }
 
 const AdminPanel: React.FC = () => {
   const [jobs, setJobs] = useState<Job[]>([]);
   const [newJob, setNewJob] = useState<Job>({ title: '', description: '', salary: '' });
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+useEffect(() => {
+  let unsubscribe: () => void;
+
+  if (auth) {
+    unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (!currentUser) {
+        router.push('/login');
+      } else if (currentUser.email !== 'sourav2000kumar07@gmail.com') {
+        router.push('/');
+      } else {
+        setUser(currentUser);
+        setLoading(false);
+      }
+    });
+  } else {
+    console.error('Firebase auth is not initialized');
+    router.push('/login');
+  }
+
+  return () => {
+    if (unsubscribe) unsubscribe();
+  };
+}, [router]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -36,7 +66,7 @@ const AdminPanel: React.FC = () => {
       }
 
       const result = await response.json();
-        if (result.success) {
+      if (result.success) {
         toast.success('Job added successfully');
         setJobs(prev => [...prev, { ...newJob, id: result.id }]);
         setNewJob({ title: '', description: '', salary: '' });
@@ -44,9 +74,11 @@ const AdminPanel: React.FC = () => {
         throw new Error(result.error || 'Failed to add job');
       }
     } catch (error) {
-      toast.error(`Failed to add job: ${error} `);
+      toast.error(`Failed to add job: ${error}`);
     }
   };
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="max-w-4xl mx-auto p-4">
@@ -93,17 +125,17 @@ const AdminPanel: React.FC = () => {
         </button>
       </form>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {jobs.map((job, index) => (
-                  <JobCard 
-                    key={job.id || index} 
-                    id={job.id || `temp-${index}`}
-                    title={job.title}
-                    description={job.description}
-                    salary={job.salary}
-                  />
-                ))}
-              </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {jobs.map((job, index) => (
+          <JobCard 
+            key={job.id || index} 
+            id={job.id || `temp-${index}`}
+            title={job.title}
+            description={job.description}
+            salary={job.salary}
+          />
+        ))}
+      </div>
     </div>
   );
 };
