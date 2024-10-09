@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import {useRouter} from "next/navigation"
 import { auth } from "../../firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
 import toast, { Toaster } from "react-hot-toast";
@@ -16,6 +17,7 @@ const SubmitForm: React.FC = () => {
     googleDriveLink: ''
   });
     const [submissionExists, setSubmissionExists] = useState(false);
+    const router = useRouter();
 
   useEffect(() => {
     let unsubscribe: () => void;
@@ -30,6 +32,8 @@ const SubmitForm: React.FC = () => {
             email: currentUser.email || ''
           }));
         checkExistingSubmission(currentUser.email);
+        }else{
+            router.push('/login')
         }
       });
     } else {
