@@ -11,6 +11,7 @@ const SubmitForm: React.FC = () => {
     name: '',
     email: '',
     phone: '',
+    position: '',
     figmaLink: '',
     googleDriveLink: ''
   });
@@ -78,6 +79,7 @@ const SubmitForm: React.FC = () => {
         name: user?.displayName || '',
         email: user?.email || '',
         phone: '',
+        position: '',
         figmaLink: '',
         googleDriveLink: ''
       });
@@ -129,7 +131,18 @@ const SubmitForm: React.FC = () => {
           />
         </div>
               
-        
+        <div>
+          <label htmlFor="position" className="block mb-2">Applied for position:</label>
+          <input
+            type="text"
+            id="position"
+            name="position"
+            value={formData.position}
+            onChange={handleInputChange}
+            className="w-full p-2 border rounded"
+            required
+          />
+        </div>
 
         <div>
           <label htmlFor="figmaLink" className="block mb-2">Figma Link</label>
