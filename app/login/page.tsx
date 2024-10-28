@@ -3,14 +3,15 @@ import { useState } from "react";
 import { signInWithPopup, GoogleAuthProvider, Auth } from "firebase/auth";
 import { auth } from "../firebase";
 import { useRouter } from 'next/navigation';
+import { FaGoogle } from "react-icons/fa";
+import { Toaster, toast } from 'react-hot-toast';
 
 const Login = () => {
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleGoogleLogin = async () => {
     if (!auth) {
-      setError("Firebase authentication is not initialized");
+      toast.error("Firebase authentication is not initialized");
       return;
     }
     const provider = new GoogleAuthProvider();
@@ -18,24 +19,29 @@ const Login = () => {
       await signInWithPopup(auth as Auth, provider);
       router.push('/'); 
     } catch (err) {
-      setError("Failed to log in with Google. Please try again.");
+      toast.error("Failed to log in with Google. Please try again.");
       console.error(err);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4">Login</h2>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <button 
-        onClick={handleGoogleLogin} 
-        className="bg-red-500 text-white p-2 rounded flex items-center justify-center w-full"
-      >
-        <svg className="w-6 h-6 mr-2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path fill="#ffffff" d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/>
-        </svg>
-        Sign in with Google
-      </button>
+    <div className="flex items-center justify-between gap-5 px-5 pl-40">
+      <Toaster position="top-center" reverseOrder={false} />
+      <div className="flex flex-col items-center justify-center gap-2">
+        <div className="flex flex-col items-center justify-center text-center gap-5">
+          <p className="text-3xl text-[#2f455c] font-bold">Login to your account</p>
+          <p className="text-[15px] text-[#727272] font-bold">Begin Your Journey to a Better Experience</p>
+          <button className="flex border-2 px-20 py-2 bg-[#2f455c] text-white rounded-full" onClick={handleGoogleLogin}>
+            <div className="flex items-center justify-center gap-2">
+              <FaGoogle className="w-[19px] h-[19px]" />
+              <p className="font-semibold">Sign up with google</p>
+            </div>
+          </button>
+        </div>
+      </div>
+      <div className="flex pt-5">
+        <img src="https://res.cloudinary.com/dzxx6craw/image/upload/v1729856739/d033c17646bbf0a2701cafd12cceb123_eiiq8y.jpg" className="rounded-lg w-[780px] h-[650px]" alt="login-img-banner" />
+      </div>
     </div>
   );
 };

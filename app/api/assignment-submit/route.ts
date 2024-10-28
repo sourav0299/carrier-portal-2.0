@@ -3,9 +3,8 @@ import { getDatabase } from '../../lib/mongodb';
 
 export async function POST(request: Request) {
   try {
-    const { name, email, phone, figmaLink, googleDriveLink } = await request.json();
+    const { name, email, phone, position, figmaLink, googleDriveLink } = await request.json();
 
-    // Validate the input
     if (!name || !email || !phone) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
@@ -16,7 +15,8 @@ export async function POST(request: Request) {
     const result = await collection.insertOne({
       name,
       email,
-      phone,
+        phone,
+      position,
       figmaLink,
       googleDriveLink,
       submittedAt: new Date()

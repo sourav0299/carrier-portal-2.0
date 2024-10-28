@@ -10,7 +10,8 @@ interface Assignment {
   _id: string;
   name: string;
   email: string;
-  phone: string;
+    phone: string;
+    position: string;
   figmaLink?: string;
   googleDriveLink?: string;
   submittedAt: string;
@@ -108,7 +109,8 @@ const AdminPage: React.FC = () => {
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Name</th>
               <th className="py-3 px-6 text-left">Email</th>
-              <th className="py-3 px-6 text-left">Phone</th>
+                <th className="py-3 px-6 text-left">Phone</th>
+              <th className="py-3 px-6 text-left">Position</th>
               <th className="py-3 px-6 text-left">Figma Link</th>
               <th className="py-3 px-6 text-left">Google Drive Link</th>
               <th className="py-3 px-6 text-left">Submitted At</th>
@@ -120,7 +122,8 @@ const AdminPage: React.FC = () => {
               <tr key={assignment._id} className="border-b border-gray-200 hover:bg-gray-100">
                 <td className="py-3 px-6 text-left whitespace-nowrap">{assignment.name}</td>
                 <td className="py-3 px-6 text-left">{assignment.email}</td>
-                <td className="py-3 px-6 text-left">{assignment.phone}</td>
+                    <td className="py-3 px-6 text-left">{assignment.phone}</td>
+                <td className="py-3 px-6 text-left">{assignment.position}</td>
                 <td className="py-3 px-6 text-left">
                   {assignment.figmaLink && (
                     <a href={assignment.figmaLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
