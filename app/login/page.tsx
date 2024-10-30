@@ -1,13 +1,22 @@
 "use client"
-import { useState } from "react";
-import { signInWithPopup, GoogleAuthProvider, Auth } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, Auth, onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 import { useRouter } from 'next/navigation';
 import { FaGoogle } from "react-icons/fa";
 import { Toaster, toast } from 'react-hot-toast';
+import { useEffect } from "react";
 
 const Login = () => {
   const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        router.push('/');
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
 
   const handleGoogleLogin = async () => {
     if (!auth) {
