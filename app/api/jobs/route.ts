@@ -1,17 +1,42 @@
-import { NextResponse } from 'next/server';
 import clientPromise from '../../lib/mongodb';
+import { NextResponse } from 'next/server';
+import { ObjectId } from 'mongodb';
 
 export async function POST(request: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("career_portal");
-    const { title, description, salary } = await request.json();
+    const {
+      jobTitle,
+      location,
+      exp,
+      jobType,
+      ctc,
+      shortDesciption,
+      positionDesciption,
+      companyDesciption,
+      companyCulture,
+      Benefits,
+      responsibilty,
+      workType,
+      Tags,
+    } = await request.json();
 
     const result = await db.collection("jobs").insertOne({
-      title,
-      description,
-      salary,
-      createdAt: new Date(),
+      jobTitle,
+      location,
+      date: new Date(),
+      exp,
+      jobType,
+      ctc,
+      shortDesciption,
+      positionDesciption,
+      companyDesciption,
+      companyCulture,
+      Benefits,
+      responsibilty,
+      workType,
+      Tags,
     });
 
     return NextResponse.json({ success: true, id: result.insertedId });
@@ -21,22 +46,30 @@ export async function POST(request: Request) {
   }
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const client = await clientPromise;
     const db = client.db("career_portal");
-    
-    const jobs = await db.collection("jobs").find({}).toArray();
-    
-    const formattedJobs = jobs.map(job => ({
-      id: job._id.toString(),
-      title: job.title,
-      description: job.description,
-      salary: job.salary,
-      createdAt: job.createdAt
-    }));
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
 
-    return NextResponse.json({ success: true, jobs: formattedJobs });
+    if (id) {
+      // If an ID is provided, fetch a specific job
+      const job = await db.collection("jobs").findOne({ _id: new ObjectId(id) });
+      if (job) {
+        return NextResponse.json({ success: true, job: { ...job, id: job._id.toString() } });
+      } else {
+        return NextResponse.json({ success: false, error: 'Job not found' }, { status: 404 });
+      }
+    } else {
+      // If no ID is provided, fetch all jobs
+      const jobs = await db.collection("jobs").find({}).toArray();
+      const formattedJobs = jobs.map(job => ({
+        ...job,
+        id: job._id.toString(),
+      }));
+      return NextResponse.json({ success: true, jobs: formattedJobs });
+    }
   } catch (error) {
     console.error('Error fetching jobs:', error);
     return NextResponse.json({ success: false, error: 'Failed to fetch jobs' }, { status: 500 });
