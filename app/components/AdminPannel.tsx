@@ -124,18 +124,6 @@ useEffect(() => {
           Add Job
         </button>
       </form>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {jobs.map((job, index) => (
-          <JobCard 
-            key={job.id || index} 
-            id={job.id || `temp-${index}`}
-            title={job.title}
-            description={job.description}
-            salary={job.salary}
-          />
-        ))}
-      </div>
     </div>
   );
 };
