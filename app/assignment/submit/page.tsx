@@ -304,12 +304,12 @@ const SubmitForm: React.FC = () => {
           </form>
         </div>
         <div className="bg-[#1e1e1e] h-[560px] w-[558px] rounded-xl shadow text-white flex items-center justify-center">
-          <div className="flex flex-col items-center justify-center">
+          <div className="">
             <div className="">
               <h1 className="text-[40px] font-bold px-16 pl-16">Your talent could be the next big thing <span className="text-[#25c3ec]">we’re waiting</span> for.</h1>
             </div>
-          <div className="pt-5 flex items-start justify-start">
-            <p className="font-bold text-start text-">-Dezainahub!</p>
+          <div className="pt-5 flex items-start justify-start px-16">
+            <p className="font-bold text-start">-Dezainahub!</p>
           </div>
           </div>
         </div>
