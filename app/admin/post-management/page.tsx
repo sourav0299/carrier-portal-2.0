@@ -6,10 +6,10 @@ import { auth } from '../../firebase'
 import toast, { Toaster } from 'react-hot-toast'
 
 interface Job {
-  id: string
-  title: string
-  description: string
-  salary: string
+  id: string;
+  jobTitle: string;
+  shortDesciption: string;
+  ctc: string;
 }
 
 const PostManagement = () => {
@@ -82,9 +82,9 @@ const PostManagement = () => {
         <ul className="space-y-4">
           {jobs.map((job) => (
             <li key={job.id} className="border p-4 rounded shadow">
-              <h2 className="text-xl font-semibold">{job.title}</h2>
-              <p className="mt-2">{job.description}</p>
-              <p className="mt-2">Salary: {job.salary}</p>
+              <h2 className="text-xl font-semibold">Title - {job.jobTitle}</h2>
+              <p className="mt-2">Description - {job.shortDesciption}</p>
+              <p className="mt-2">Salary - {job.ctc}</p>
               <button
                 onClick={() => handleDelete(job.id)}
                 className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"

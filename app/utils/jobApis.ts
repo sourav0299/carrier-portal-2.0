@@ -13,7 +13,7 @@ export async function getJobs() {
   }))
 }
 
-export async function getJobById(id: string) {
+export async function getJobById(id: string) { 
   const client = await clientPromise
   const db = client.db("career_portal")
   const job = await db.collection("jobs").findOne({ _id: new ObjectId(id) })

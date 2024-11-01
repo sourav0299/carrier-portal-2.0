@@ -54,7 +54,6 @@ export async function GET(request: Request) {
     const id = searchParams.get('id');
 
     if (id) {
-      // If an ID is provided, fetch a specific job
       const job = await db.collection("jobs").findOne({ _id: new ObjectId(id) });
       if (job) {
         return NextResponse.json({ success: true, job: { ...job, id: job._id.toString() } });
@@ -62,7 +61,6 @@ export async function GET(request: Request) {
         return NextResponse.json({ success: false, error: 'Job not found' }, { status: 404 });
       }
     } else {
-      // If no ID is provided, fetch all jobs
       const jobs = await db.collection("jobs").find({}).toArray();
       const formattedJobs = jobs.map(job => ({
         ...job,
