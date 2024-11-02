@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { onAuthStateChanged } from 'firebase/auth'
+import { onAuthStateChanged, User } from 'firebase/auth'
 import { auth } from '../../firebase'
 import toast, { Toaster } from 'react-hot-toast'
 
@@ -18,7 +18,13 @@ const PostManagement = () => {
   const router = useRouter()
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (!auth) {
+      console.error('Firebase auth is not initialized');
+      router.push('/');
+      return;
+    }
+
+    const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
       if (!user || user.email !== 'sourav2000kumar07@gmail.com') {
         router.push('/')
       } else {

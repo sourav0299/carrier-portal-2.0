@@ -5,7 +5,7 @@ export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("career_portal");
-    const jobs = await db.collection("jobs").find({}, { projection: { title: 1 } }).toArray();
+    const jobs = await db.collection("jobs").find({}, { projection: { jobTitle: 1 } }).toArray();
 
     return NextResponse.json(jobs);
   } catch (error) {

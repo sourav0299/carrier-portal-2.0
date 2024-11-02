@@ -10,11 +10,17 @@ const Login = () => {
   const router = useRouter();
 
   useEffect(() => {
+    if (!auth) {
+      console.error('Firebase auth is not initialized');
+      return;
+    }
+  
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         router.push('/');
       }
     });
+  
     return () => unsubscribe();
   }, [router]);
 

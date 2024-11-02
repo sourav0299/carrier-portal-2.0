@@ -28,19 +28,24 @@ const SubmitForm: React.FC = () => {
   const router = useRouter();
   
     useEffect(() => {
-    const fetchJobTitles = async () => {
-      try {
-        const response = await fetch('/api/open-position');
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data: Job[] = await response.json();
-        setJobTitles(data);
-      } catch (error) {
-        console.error('Error fetching job titles:', error);
-      }
-    };
-
-    fetchJobTitles();
-  }, []);
+      const fetchJobTitles = async () => {
+        try {
+          const response = await fetch('/api/jobs');
+          if (!response.ok) throw new Error('Network response was not ok');
+          const data = await response.json();
+          if (data.success && Array.isArray(data.jobs)) {
+            const titles = data.jobs.map((job: any) => ({ title: job.jobTitle }));
+            setJobTitles(titles);
+          } else {
+            throw new Error('Invalid data format');
+          }
+        } catch (error) {
+          console.error('Error fetching job titles:', error);
+        }
+      };
+    
+      fetchJobTitles();
+    }, []);
 
   useEffect(() => {
     let unsubscribe: () => void;
