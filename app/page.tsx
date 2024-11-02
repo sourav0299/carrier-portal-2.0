@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
+import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { TbEyeHeart } from "react-icons/tb";
 interface Job {
+  date: string | number | Date;
   id: string;
   jobTitle: string;
   location: string;
@@ -13,6 +15,7 @@ interface Job {
   shortDesciption: string;
   workType: string;
   Tags: string[];
+  viewCount: number;
 }
 
 const JobsPage: React.FC = () => {
@@ -20,6 +23,36 @@ const JobsPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [isFilterOpen, setIsFilterOpen] = useState(true);
+  const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([]);
+
+  const jobTypes = ['Full Time', 'Part Time', 'Contract', 'Internship'];
+
+  const toggleFilter = () => setIsFilterOpen(!isFilterOpen);
+
+
+
+    const handleJobTypeChange = (jobType: string) => {
+    setSelectedJobTypes(prevTypes => 
+      prevTypes.includes(jobType)
+        ? prevTypes.filter(type => type !== jobType)
+        : [...prevTypes, jobType]
+    );
+  };
+
+  const incrementViewCount = async (jobId: string) => {
+    try {
+      const response = await fetch(`/api/jobs/${jobId}/views`, { method: 'POST' });
+      if (!response.ok) {
+        throw new Error('Failed to increment view count');
+      }
+      setJobs(jobs.map(job => 
+        job.id === jobId ? { ...job, viewCount: job.viewCount + 1 } : job
+      ));
+    } catch (error) {
+      console.error('Error incrementing view count:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchJobs = async () => {
@@ -48,35 +81,87 @@ const JobsPage: React.FC = () => {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Open Positions</h1>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div className="container mx-auto px-4 py-8 flex justify-center gap-10">
+      <div className="shadow rounded-lg w-[295px] h-[633px] overflow-hidden flex flex-col py-3 bg-white">
+    <div 
+      className="p-4 cursor-pointer flex justify-between items-center"
+      onClick={toggleFilter}
+    >
+      <h3 className="text-lg font-semibold">Type of Employment</h3>
+      <span>{isFilterOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}</span>
+    </div>
+    <div className={`flex-grow overflow-y-auto transition-all duration-300 ${isFilterOpen ? 'max-h-full' : 'max-h-0'}`}>
+      <div className="px-4">
+        {jobTypes.map(jobType => (
+          <div key={jobType} className="flex items-center mb-2">
+            <input
+              type="checkbox"
+              id={jobType}
+              checked={selectedJobTypes.includes(jobType)}
+              onChange={() => handleJobTypeChange(jobType)}
+              className="mr-2"
+            />
+            <label htmlFor={jobType}>{jobType}</label>
+          </div>
+        ))}
+      </div>
+    </div>
+      </div>
+      <div className=" flex flex-col max-h-full gap-5">
+        <div className=" flex items-center justify-between shadow p-4 rounded-xl px-10 bg-white">
+          <div className="text-[18px] text-[#9c9ca3]">
+            <span className="font-bold text-[18px] text-[#151515]">{jobs.length < 10 ? `0${jobs.length}` : jobs.length}</span> Jobs Openings
+          </div>
+          <div className="text-lg text-[#9c9ca3]">
+            Sort By: <span className="text-[18px] text-[#151515] font-bold">Newest Post</span>
+          </div>
+        </div>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {jobs.map((job) => (
           <div 
             key={job.id} 
-            className="bg-white shadow-lg rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300"
-            onClick={() => router.push(`/jobs/${job.id}`)}
+            className="bg-white shadow rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300 h-auto w-[338px]"
+            onClick={() => {
+              incrementViewCount(job.id);
+              router.push(`/jobs/${job.id}`);
+            }}
           >
             <div className="p-6">
-              <h2 className="text-xl font-semibold mb-2">{job.jobTitle}</h2>
-              <p className="text-gray-600 mb-4">{job.shortDesciption}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                  {job.location}
-                </span>
-                <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                  {job.workType}
-                </span>
-                <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded">
-                  {job.exp} years exp
-                </span>
+              <div className="flex gap-3">
+                <div className="25c3ec">
+                  <img src={`https://s3-alpha-sig.figma.com/img/1194/5807/6510c32fcb74863cdee88774dd7289b6?Expires=1731283200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=X8JRxYw9pOsmTsPeXrx17dP8~eOgPAXb2jMMLupIZtpkFLvl1lmpI5P~kEJyIC3-iU2EosEMObae91LZKO4kzTLBgsWBQTMGj6zInXiPlDWmqIYPEE-sflQloi8yeXhiaFP~sDqZX30weroP4FQ-Leu~Liw~UiuLRQujtToXbudTqk1wsvj5ic61hiDGKZJZk2d4hEA2XA2OFPgA6Fz7OaIY7TUSUqIWnQrn3pf72yHHB9nM9Z53Z~yEtyVAG7uZqbELFUrtXWooaT1r0BktITjqTXXth39yjMowgylsCXf2ZD2RNxp9pLna5jsr0ldm5u5bNKLMt6zwUt5YEkuHyA__`} alt={job.jobTitle} className="object-cover w-auto h-[56px]" />
+                </div>
+                <div className="flex flex-col justify-between py-1">
+                  <div className="text-wrap text-[12px] w-[111px]">{job.jobTitle}</div>
+                  <div className="text-[10px] text-[#25c3ec]">{job.location}</div>
+                </div>
+                <div className="ml-auto flex items-center">
+                  <div className="text-[12px] text-gray-500">
+                    {new Date(job.date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-700 font-medium">{job.ctc}</span>
+              <div className="flex items-center justify-between py-2">
+                <div className="text-[12px] font-semibold">{job.exp} Years Exp</div>
+                <div className="text-[12px] font-semibold">{job.workType}</div>
+                <div className="text-[12px] font-semibold">₹ {job.ctc} CTC</div>
+              </div>
+              <div className="">
+                <div className="text-wrap text-[#bababa] font-rasa">
+                  <p className="line-clamp-5 text-[12px] leading-tight">{job.shortDesciption}</p>
+                </div>
+              </div>
+              <div className="py-2 flex items-center justify-between">
+                <div className="text-[#25c3ec] text-[12px]">View More</div>
+                <div className="flex items-center justify-center gap-1">
+                  <TbEyeHeart />
+                  {job.viewCount < 10 ? `0${job.viewCount}` : job.viewCount}
+                </div>
               </div>
             </div>
           </div>
         ))}
+      </div>
       </div>
     </div>
   );

@@ -281,30 +281,28 @@ const SubmitForm: React.FC = () => {
                      <span className=""><MdContentPaste /></span> Paste
                     </button>
                 </div>
-                <div className="py-5">
-        <div className="">
-          {submissionExists ? (
-          <>
-            <button
-              type="button"
-              className="px-4 py-2 rounded w-[200px] h-[54px] text-md font-bold bg-gray-400 text-white cursor-not-allowed"
-              data-tooltip-id="submit-tooltip"
-              data-tooltip-content="You have already submitted an assignment. Only one submission is allowed."
-            >
-              Already Submitted
-            </button>
-            <Tooltip id="submit-tooltip" place="top" />
-          </>
-        ) : (
-          <button
-            type="submit"
-            className="px-4 py-2 rounded w-[200px] h-[54px] text-md font-bold bg-[#25c3ec] hover:bg-[#1da8cc] text-white"
-          >
-            Submit Assignment
-          </button>
-        )}
-        </div>
-      </div>
+                <div className="pt-5 relative">
+  {submissionExists ? (
+    <>
+      <button
+        type="button"
+        className="px-4 py-2 rounded w-[200px] h-[54px] text-md font-bold bg-gray-400 text-white cursor-not-allowed"
+        data-tooltip-id="submit-tooltip"
+        data-tooltip-content="You have already submitted an assignment. Only one submission is allowed."
+      >
+        Already Submitted
+      </button>
+      <Tooltip id="submit-tooltip" place="top" style={{ zIndex: 50 }} />
+    </>
+  ) : (
+    <button
+      type="submit"
+      className="px-4 py-2 rounded w-[200px] h-[54px] text-md font-bold bg-[#25c3ec] hover:bg-[#1da8cc] text-white"
+    >
+      Submit Assignment
+    </button>
+  )}
+</div>
               </div>
             </div>
             </div>
