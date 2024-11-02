@@ -129,12 +129,12 @@ const SubmitForm: React.FC = () => {
     <div className="mx-auto h-screen bg-[#f5f5f5]">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="flex items-center justify-center gap-8 py-5">
-        <div className="bg-white shadow rounded-xl w-[800px] h-[560px]">
+        <div className="bg-white shadow rounded-xl w-[800px] h-[560px] relative overflow-hidden">
           <form onSubmit={handleSubmit}  className="">
             <div className="py-5 w-full flex flex-col gap">
             <h1 className="text-[#141516] font-bold text-4xl text-center">Submit Assignment</h1>
             <p className="text-center pt-3">Every submission brings you one step closer to success!</p>
-            <div className="pt-5">
+            <div className="pt-5 px-6">
               <div className="flex items-center justify-between px-5">
                 <div className="group w-[330px]">
                   <label 
@@ -282,7 +282,8 @@ const SubmitForm: React.FC = () => {
                     </button>
                 </div>
                 <div className="py-5">
-        {submissionExists ? (
+        <div className="">
+          {submissionExists ? (
           <>
             <button
               type="button"
@@ -302,11 +303,26 @@ const SubmitForm: React.FC = () => {
             Submit Assignment
           </button>
         )}
+        </div>
       </div>
               </div>
             </div>
-          </div>
+            </div>
           </form>
+          <div className="absolute bottom-0 right-0">
+    <div className="relative w-[105px] h-[78px]">
+      <div className="absolute bottom-0 right-0 z-10">
+        <svg width="105" height="78" viewBox="0 0 105 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="72.585" cy="72.5069" r="72.4932" fill="#1E1E1E"/>
+        </svg>
+      </div>
+      <div className="absolute -top-5 -left-4 z-20">
+        <svg width="75" height="75" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="37.1898" cy="37.1898" r="37.1898" fill="#484848" fillOpacity="0.5"/>
+        </svg>
+      </div>
+    </div>
+  </div>
         </div>
         <div className="bg-[#1e1e1e] h-[560px] w-[558px] rounded-xl shadow text-white flex items-center justify-center">
           <div className="">
