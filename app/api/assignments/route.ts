@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { getDatabase } from '../../lib/mongodb';
+import clientPromise from '../../lib/mongodb';
 
 export async function GET() {
   try {
-    const db = await getDatabase();
+    const client = await clientPromise;
+    const db = client.db('carrierportal');
     const collection = db.collection('assignments');
 
     const assignments = await collection.find({}).toArray();
