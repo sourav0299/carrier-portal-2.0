@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { FaEnvelope } from "react-icons/fa";
 import { IoShareSocialSharp } from "react-icons/io5";
 import  ApplicationModal  from '../../components/ApplicationModal'
+import { auth } from '../../firebase'
+import { User } from 'firebase/auth';
 
 interface Job {
   id: string;
@@ -31,9 +33,17 @@ const JobDescriptionPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+
   const router = useRouter();
 
   useEffect(() => {
+    let unsubscribe: () => void;
+    if(auth){
+      unsubscribe = auth.onAuthStateChanged((user) => {
+        setUser(user);
+      });
+    }
     const fetchJob = async () => {
       const id = window.location.pathname.split('/').pop();
       try {
@@ -55,6 +65,12 @@ const JobDescriptionPage: React.FC = () => {
     };
 
     fetchJob();
+
+    return () => {
+      if(unsubscribe){
+        unsubscribe();
+      }
+    }
   }, []);
 
   const handleShareClick = () => {
@@ -68,7 +84,11 @@ const JobDescriptionPage: React.FC = () => {
   };
 
   const toggleModal = () => {
-    setIsModalOpen(!isModalOpen);
+    if(user){
+      setIsModalOpen(!isModalOpen);
+    }else{
+      router.push('/login');
+    }
   };
 
   if (loading) return <div>Loading...</div>;
@@ -190,7 +210,7 @@ const JobDescriptionPage: React.FC = () => {
             </div>
           </div>
         </div>
-        <ApplicationModal isOpen={isModalOpen} onClose={toggleModal} jobTitle={job.jobTitle} />
+          <ApplicationModal isOpen={isModalOpen} onClose={toggleModal} jobTitle={job.jobTitle} />
       </div>
       
     </div>
