@@ -129,7 +129,7 @@ const JobsPage: React.FC = () => {
             <div className="p-6">
               <div className="flex gap-3">
                 <div className="25c3ec">
-                  <img src={`https://s3-alpha-sig.figma.com/img/1194/5807/6510c32fcb74863cdee88774dd7289b6?Expires=1731283200&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=X8JRxYw9pOsmTsPeXrx17dP8~eOgPAXb2jMMLupIZtpkFLvl1lmpI5P~kEJyIC3-iU2EosEMObae91LZKO4kzTLBgsWBQTMGj6zInXiPlDWmqIYPEE-sflQloi8yeXhiaFP~sDqZX30weroP4FQ-Leu~Liw~UiuLRQujtToXbudTqk1wsvj5ic61hiDGKZJZk2d4hEA2XA2OFPgA6Fz7OaIY7TUSUqIWnQrn3pf72yHHB9nM9Z53Z~yEtyVAG7uZqbELFUrtXWooaT1r0BktITjqTXXth39yjMowgylsCXf2ZD2RNxp9pLna5jsr0ldm5u5bNKLMt6zwUt5YEkuHyA__`} alt={job.jobTitle} className="object-cover w-auto h-[56px]" />
+                  <img src={`https://res.cloudinary.com/dzxx6craw/image/upload/v1731386508/6510c32fcb74863cdee88774dd7289b6_y5jm8l.png`} alt={job.jobTitle} className="object-cover w-auto h-[56px]" />
                 </div>
                 <div className="flex flex-col justify-between py-1">
                   <div className="text-wrap text-[12px] w-[111px]">{job.jobTitle}</div>
