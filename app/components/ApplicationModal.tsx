@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { auth } from '../firebase'
+import { User } from 'firebase/auth'
 
 const ApplicationModal: React.FC<{ isOpen: boolean; onClose: () => void; jobTitle: string }> = ({ isOpen, onClose, jobTitle }) => {
   const [formData, setFormData] = useState({
@@ -7,6 +9,15 @@ const ApplicationModal: React.FC<{ isOpen: boolean; onClose: () => void; jobTitl
     resume: null as File | null,
     coverLetter: ''
   });
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user: User | null) => {
+      if(user){
+        setFormData(prev => ({...prev, name: user.displayname || '', email: user.email || '', }))
+      }
+    })
+    return () => unsubscribe();
+  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -36,6 +47,7 @@ const ApplicationModal: React.FC<{ isOpen: boolean; onClose: () => void; jobTitl
             <input
               type="text"
               name="name"
+              value={formData.name}
               placeholder="Full Name"
               onChange={handleInputChange}
               className="mt-2 p-2 w-full border rounded"
@@ -44,6 +56,7 @@ const ApplicationModal: React.FC<{ isOpen: boolean; onClose: () => void; jobTitl
             <input
               type="email"
               name="email"
+              value={FormData.email}
               placeholder="Email"
               onChange={handleInputChange}
               className="mt-2 p-2 w-full border rounded"

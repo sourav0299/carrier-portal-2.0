@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { TbEyeHeart } from "react-icons/tb";
+
 interface Job {
   date: string | number | Date;
   id: string;
@@ -25,6 +26,7 @@ const JobsPage: React.FC = () => {
   const router = useRouter();
   const [isFilterOpen, setIsFilterOpen] = useState(true);
   const [selectedJobTypes, setSelectedJobTypes] = useState<string[]>([]);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
 
   const jobTypes = ['Full Time', 'Part Time', 'Contract', 'Internship'];
 
@@ -77,12 +79,22 @@ const JobsPage: React.FC = () => {
     fetchJobs();
   }, []);
 
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => { 
+    setSortOrder(event.target.value as 'newest' | 'oldest');
+  }
+
+  const sortedJobs = [...jobs].sort((a, b) => {
+    const dataA = new Date(a.date).getTime();
+    const dataB = new Date(b.date).getTime();
+    return sortOrder === 'newest'? dataB - dataA : dataA - dataB;
+  })
+
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="container mx-auto px-4 py-8 flex justify-center gap-10">
-      <div className="shadow rounded-lg w-[295px] h-[633px] overflow-hidden flex flex-col py-3 bg-white">
+      {/* <div className="shadow rounded-lg w-[295px] h-[633px] overflow-hidden flex flex-col py-3 bg-white">
     <div 
       className="p-4 cursor-pointer flex justify-between items-center"
       onClick={toggleFilter}
@@ -106,18 +118,26 @@ const JobsPage: React.FC = () => {
         ))}
       </div>
     </div>
-      </div>
+      </div> */}
       <div className=" flex flex-col max-h-full gap-5">
         <div className=" flex items-center justify-between shadow p-4 rounded-xl px-10 bg-white">
           <div className="text-[18px] text-[#9c9ca3]">
             <span className="font-bold text-[18px] text-[#151515]">{jobs.length < 10 ? `0${jobs.length}` : jobs.length}</span> Jobs Openings
           </div>
-          <div className="text-lg text-[#9c9ca3]">
-            Sort By: <span className="text-[18px] text-[#151515] font-bold">Newest Post</span>
+           <div className="text-lg text-[#9c9ca3] flex items-center">
+            <span className="mr-2">Sort By:</span>
+            <select
+              value={sortOrder}
+              onChange={handleSortChange}
+              className="text-[18px] text-[#151515] font-bold bg-white rounded-md px-2 py-1"
+            >
+              <option value="newest">Newest Post</option>
+              <option value="oldest">Oldest Post</option>
+            </select>
           </div>
         </div>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {jobs.map((job) => (
+        {sortedJobs.map((job) => (
           <div 
             key={job.id} 
             className="bg-white shadow rounded-lg overflow-hidden cursor-pointer hover:shadow-xl transition-shadow duration-300 h-auto w-[338px]"
