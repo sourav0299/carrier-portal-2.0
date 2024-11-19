@@ -1,6 +1,9 @@
+import React from 'react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
+
 const WordCountIndicator: React.FC<{ wordCount: number; maxWords: number }> = ({ wordCount, maxWords }) => {
   const progress = useMotionValue(wordCount / maxWords);
-  const strokeDasharray = useTransform(progress, value => `${value} 1`);
+  const strokeDasharray = useTransform(progress, (value: number) => `${value} 1`);
 
   return (
     <motion.svg
@@ -42,3 +45,5 @@ const WordCountIndicator: React.FC<{ wordCount: number; maxWords: number }> = ({
     </motion.svg>
   );
 };
+
+export default WordCountIndicator;

@@ -67,7 +67,8 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setFormData((prev) => ({ ...prev, resume: e.target.files[0] }));
+      const file = e.target.files[0];
+      setFormData((prev) => ({ ...prev, resume: file }));
     } else {
       setFormData((prev) => ({ ...prev, resume: null }));
     }
