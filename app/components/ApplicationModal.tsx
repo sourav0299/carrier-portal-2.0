@@ -3,14 +3,15 @@ import { auth } from '../firebase';
 import { User } from 'firebase/auth';
 import { MdDelete, MdClose, MdOutlineFileUpload } from "react-icons/md";
 import { motion, useMotionValue, useTransform } from 'framer-motion';
+import toast, { Toaster } from "react-hot-toast";
 
 interface FormData {
   name: string;
   email: string;
   phoneNumber: string;
   resume: File | null;
-  coverLetter: string;
   portfolio: string;
+  experience: string;
 }
 
 interface ApplicationModalProps {
@@ -26,7 +27,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
     email: '',
     phoneNumber: '',
     resume: null,
-    coverLetter: '',
+    experience: '',
     portfolio: ''
   });
   const [text, setText] = useState('');
@@ -65,29 +66,77 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      const file = e.target.files[0];
-      setFormData((prev) => ({ ...prev, resume: file }));
-    } else {
-      setFormData((prev) => ({ ...prev, resume: null }));
-    }
-  };
+ const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+   if (e.target.files && e.target.files.length > 0) {
+     const file = e.target.files[0];
+     
+     if (file.type !== 'application/pdf') {
+       toast.error('Please upload a PDF file');
+       return;
+     }
+ 
+     setFormData((prev) => ({ ...prev, resume: file }));
+   }
+ };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isSubmitDisabled) {
-      console.log('Form submitted:', formData);
+    if (isSubmitDisabled) return;
+  
+    try {
+      let resumeUrl = '';
+      if (formData.resume) {
+        const cloudinaryFormData = new FormData();
+        cloudinaryFormData.append('file', formData.resume);
+        cloudinaryFormData.append('upload_preset', 'sourav0299'); // Using the new upload preset
+  
+        const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/upload`, {
+          method: 'POST',
+          body: cloudinaryFormData,
+        });
+  
+        if (!cloudinaryResponse.ok) {
+          throw new Error('Failed to upload file to Cloudinary');
+        }
+  
+        const cloudinaryData = await cloudinaryResponse.json();
+        resumeUrl = cloudinaryData.secure_url;
+      }
+  
+      const applicationData = {
+        ...formData,
+        jobTitle,
+        resumeUrl,
+      };
+  
+      const response = await fetch('/api/applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(applicationData),
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to submit application');
+      }
+  
+      toast.success('Application submitted successfully');
+    setTimeout(() => {
       onClose();
+    }, 2000);
+    } catch (error) {
+      console.error('Error submitting application:', error);
+      toast.error('Failed to submit application. Please try again.');
     }
   };
-
   const isSubmitDisabled = remainingCharacters < -20;
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-80 overflow-y-auto h-full w-full z-50 flex ">
+      <Toaster position="top-center" reverseOrder={false} />
       <div className="relative top-20 mx-auto p-5 border shadow-lg rounded-md bg-white w-full max-w-[662px] h-[592px] overflow-y-auto">
         <button
           onClick={onClose}
@@ -142,6 +191,8 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
                 type="text"
                 name="experience"
                 placeholder="Job Relevent Experience"
+                value={formData.experience}
+                onChange={handleInputChange}
                 className="w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
               />
               </div>
