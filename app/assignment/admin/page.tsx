@@ -28,11 +28,12 @@ const AdminPage: React.FC = () => {
   useEffect(() => {
     let unsubscribe: () => void;
   
+    const allowedEmails = ['sourav2000kumar07@gmail.com', 'divyankithub@gmail.com']; 
     if (auth) {
       unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         if (!currentUser) {
           router.push('/assignment/submit');
-        } else if (currentUser.email !== 'sourav2000kumar07@gmail.com') {
+        } else if (!allowedEmails.includes(currentUser.email || '')) {
           router.push('/assignment/submit');
         } else {
           setUser(currentUser);
@@ -44,7 +45,6 @@ const AdminPage: React.FC = () => {
       console.error('Firebase auth is not initialized');
       router.push('/assignment/submit');
     }
-  
     return () => {
       if (unsubscribe) unsubscribe();
     };

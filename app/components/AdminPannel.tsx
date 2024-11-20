@@ -46,11 +46,12 @@ const AdminPanel: React.FC = () => {
   useEffect(() => {
     let unsubscribe: () => void;
 
+    const allowedEmails = ['sourav2000kumar07@gmail.com', 'divyankithub@gmail.com']; // Add the new email here
     if (auth) {
       unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         if (!currentUser) {
           router.push('/login');
-        } else if (currentUser.email !== 'sourav2000kumar07@gmail.com') {
+        } else if (!allowedEmails.includes(currentUser.email || '')) {
           router.push('/');
         } else {
           setUser(currentUser);

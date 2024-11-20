@@ -100,7 +100,7 @@ const JobDescriptionPage: React.FC = () => {
       <div className="">
         <div 
         onClick={() => router.push('/')}
-        className=" text-[#1565d8] text-[16px] font-bold py-5 pt-10" 
+        className=" text-[#1565d8] text-[16px] font-bold py-5 pt-10 cursor-pointer" 
       >
         View All open position
       </div>

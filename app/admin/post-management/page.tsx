@@ -24,8 +24,9 @@ const PostManagement = () => {
       return;
     }
 
+    const allowedEmails = ['sourav2000kumar07@gmail.com', 'divyankithub@gmail.com'];
     const unsubscribe = onAuthStateChanged(auth, (user: User | null) => {
-      if (!user || user.email !== 'sourav2000kumar07@gmail.com') {
+      if (!user || !allowedEmails.includes(user.email || '')) {
         router.push('/')
       } else {
         fetchJobs()
