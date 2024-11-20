@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { auth } from '../firebase';
 import { User } from 'firebase/auth';
-import { MdDelete } from "react-icons/md";
+import { MdDelete, MdClose, MdOutlineFileUpload } from "react-icons/md";
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 interface FormData {
@@ -87,107 +87,131 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-80 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-      <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+    <div className="fixed inset-0 bg-gray-600 bg-opacity-80 overflow-y-auto h-full w-full z-50 flex ">
+      <div className="relative top-20 mx-auto p-5 border shadow-lg rounded-md bg-white w-full max-w-[662px] h-[592px] overflow-y-auto">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+          aria-label="Close"
+        >
+          <MdClose className="w-6 h-6" />
+        </button>
         <div className="mt-3 text-center">
-          <h3 className="text-lg leading-6 font-medium text-gray-900">Apply for this job</h3>
-          <form onSubmit={handleSubmit} className="mt-2">
-            {['name', 'email', 'phoneNumber', 'portfolio'].map((field) => (
-              <input
-                key={field}
-                type={field === 'email' ? 'email' : 'text'}
-                name={field}
-                value={formData[field as keyof FormData] as string}
-                placeholder={field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
-                onChange={handleInputChange}
-                className="mt-2 p-2 w-full border rounded"
-                required
-              />
-            ))}
-            <input
-              type="text"
-              name="position"
-              placeholder="Job Position"
-              className="mt-2 p-2 w-full border rounded bg-gray-100 text-gray-700 cursor-not-allowed"
-              value={jobTitle}
-              disabled
-            />
-            <div className="mt-2 flex items-center">
-              <input
-                type="file"
-                name="resume"
-                onChange={handleFileChange}
-                className="hidden"
-                id="resume-upload"
-                required
-              />
-              <label htmlFor="resume-upload" className="cursor-pointer bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600">
-                {formData.resume ? 'Change File' : 'Upload Resume'}
-              </label>
-              {formData.resume && (
-                <div className="ml-2 flex items-center gap-5">
-                  <span className="text-sm">{formData.resume.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => setFormData((prev) => ({ ...prev, resume: null }))}
-                    className="ml-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
-                    aria-label="Delete file"
-                  >
-                    <MdDelete className="w-5 h-5" />
-                  </button>
-                </div>
-              )}
-            </div>
-            <div className="relative">
-              <textarea
-                name="coverLetter"
-                placeholder="Cover Letter (300 letters maximum)"
-                value={formData.coverLetter}
-                onChange={handleChange}
-                className={`w-full p-3 border ${remainingCharacters < 0 ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
-                rows={4}
-                required
-              ></textarea>
-              <div className="absolute bottom-4 right-4">
-                <svg width="80" height="80" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r={radius} fill="none" stroke="#e0e0e0" strokeWidth="10" />
-                  <motion.circle
-                    cx="50"
-                    cy="50"
-                    r={radius}
-                    fill="none"
-                    stroke={color}
-                    strokeWidth="10"
-                    strokeDasharray={circumference}
-                    strokeDashoffset={dashoffset}
-                    strokeLinecap="round"
-                    transform="rotate(-90 50 50)"
+          <h3 className="text-3xl leading-6 font-medium text-gray-900">Want to join our team?</h3>
+          <h3 className="text-sm leading-6 text-gray-900 my-2">Your talent could be the next big thing we’re waiting for.</h3>
+          <form onSubmit={handleSubmit} className="mt-2 mx-5">
+            <div className="grid grid-cols-2 gap-8 mt-4">
+              {['name', 'email', 'phoneNumber', 'portfolio'].map((field) => (
+                <div key={field} className="flex flex-col">
+                  <label htmlFor={field} className="text-left text-sm font-medium text-gray-700 mb-1">
+                    {field === 'name' ? 'Full Name' : field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                  </label>
+                  <input
+                    id={field}
+                    type={field === 'email' ? 'email' : field === 'phoneNumber' ? 'tel' : 'text'}
+                    name={field}
+                    value={formData[field as keyof FormData] as string}
+                    placeholder={field === 'phoneNumber' ? 'Enter full number with country code' : field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                    onChange={handleInputChange}
+                    className={`w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300 ${field === 'email' ? 'cursor-not-allowed' : ''}`}
+                    required
+                    disabled={field === 'email'}
                   />
-                  <text x="50" y="55" textAnchor="middle" fontSize="16" fill={remainingCharacters < 0 ? '#ef4444' : '#3b82f6'}>
-                    {remainingCharacters}
-                  </text>
-                </svg>
+                </div>
+              ))}
+              <div className="">
+              <label htmlFor="position" className="block text-left text-sm font-medium text-gray-700 mb-1">
+                Job Position
+              </label>
+              <input
+                id="position"
+                type="text"
+                name="position"
+                placeholder="Job Position"
+                className="cursor-not-allowed w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
+                value={jobTitle}
+                disabled
+              />
+              </div>
+              <div className="">
+              <label htmlFor="experience" className="block text-left text-sm font-medium text-gray-700 mb-1">
+                Job Experience
+              </label>
+              <input
+                id="experience"
+                type="text"
+                name="experience"
+                placeholder="Job Relevent Experience"
+                className="w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
+              />
               </div>
             </div>
-
-            <div className="items-center py-3">
+            
+            <div className="mt-4">
+              <label htmlFor="resumeUpload" className="block text-left text-sm font-medium text-gray-700 mb-1">
+                Upload Resume
+              </label>
+              <div className="relative">
+                <label htmlFor="resumeUpload" className="flex items-center justify-center w-full h-16 border-2 border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none px-4">
+                  {formData.resume ? (
+                    <span className="flex items-center gap-2 truncate">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      </svg>
+                      <span className="truncate">{formData.resume.name}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      <MdOutlineFileUpload />
+                      Click and Upload your Resume
+                    </span>
+                  )}
+                  {formData.resume && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setFormData((prev) => ({ ...prev, resume: null }));
+                      }}
+                      className="flex items-center text-sm text-red-500 hover:text-red-700 ml-2"
+                    >
+                      <MdDelete className="w-5 h-5" />
+                    </button>
+                  )}
+                </label>
+                <input
+                  id="resumeUpload"
+                  type="file"
+                  name="resume"
+                  onChange={handleFileChange}
+                  className="hidden"
+                  required
+                />
+              </div>
+            </div>
+            <div className="py-3 mt-4 flex">
               <button
                 type="submit"
-                className={`py-2 text-white text-base font-medium rounded-md w-full shadow-sm focus:outline-none focus:ring-2 ${
-                  isSubmitDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-700 focus:ring-blue-300'
-                }`}
-                disabled={isSubmitDisabled}
+                className="py-2 px-6 bg-[#1e1e1e] text-white text-base font-medium rounded-md w-[203px] h-[59px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] hover:opacity-80 transition-opacity duration-300"
               >
-                Submit Application
+                Apply
               </button>
             </div>
           </form>
-          <button
-            onClick={onClose}
-            className="mt-2 py-2 bg-gray-300 text-gray-800 text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300"
-          >
-            Close
-          </button>
+          <div className="absolute bottom-0 right-0">
+          <div className="relative w-[105px] h-[78px]">
+            <div className="absolute bottom-0 right-0 z-10">
+              <svg width="105" height="78" viewBox="0 0 105 78" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="72.585" cy="72.5069" r="72.4932" fill="#1E1E1E"/>
+              </svg>
+            </div>
+            <div className="absolute -top-5 -left-4 z-20">
+              <svg width="75" height="75" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="37.1898" cy="37.1898" r="37.1898" fill="#484848" fillOpacity="0.5"/>
+              </svg>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </div>
