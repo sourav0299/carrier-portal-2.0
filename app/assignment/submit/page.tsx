@@ -219,12 +219,12 @@ const SubmitForm: React.FC = () => {
                   htmlFor="figmaLink" 
                   className="block mb-2 text-[#8d8d8d] group-focus-within:text-black transition-colors duration-300"
                 >
-                  Figma Link <span className="text-red-500 font-bold">*</span>
+                  Drop Portfolio Link <span className="text-red-500 font-bold">*</span>
                 </label>
                 <div className="relative">
                   <input
                     type="url"
-                    placeholder="Drop your Portfolio Link"
+                    placeholder="eg. behance, figma, dribble"
                     id="figmaLink"
                     name="figmaLink"
                     value={formData.figmaLink}
