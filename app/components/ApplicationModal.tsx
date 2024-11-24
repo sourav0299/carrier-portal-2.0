@@ -153,14 +153,18 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
               {['name', 'email', 'phoneNumber', 'portfolio'].map((field) => (
                 <div key={field} className="flex flex-col">
                   <label htmlFor={field} className="text-left text-sm font-medium text-gray-700 mb-1">
-                    {field === 'name' ? 'Full Name' : field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                    {field === 'name' ? 'Full Name' : 
+                     field === 'portfolio' ? 'Portfolio Link' : 
+                     field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
                   </label>
                   <input
                     id={field}
                     type={field === 'email' ? 'email' : field === 'phoneNumber' ? 'tel' : 'text'}
                     name={field}
                     value={formData[field as keyof FormData] as string}
-                    placeholder={field === 'phoneNumber' ? 'Enter full number with country code' : field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                    placeholder={field === 'phoneNumber' ? 'Enter full number with country code' : 
+                                 field === 'portfolio' ? 'Enter your portfolio URL' :
+                                 field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
                     onChange={handleInputChange}
                     className={`w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300 ${field === 'email' ? 'cursor-not-allowed' : ''}`}
                     required
