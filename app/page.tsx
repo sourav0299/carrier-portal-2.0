@@ -149,7 +149,7 @@ const JobsPage: React.FC = () => {
             <div className="p-6">
               <div className="flex gap-3">
                 <div className="25c3ec">
-                  <img src={`https://res.cloudinary.com/dzxx6craw/image/upload/v1731386508/6510c32fcb74863cdee88774dd7289b6_y5jm8l.png`} alt={job.jobTitle} className="object-cover w-auto h-[56px]" />
+                  <img src={`https://res.cloudinary.com/dzxx6craw/image/upload/v1732445765/8c5cc4de18605c39ebc966f31882a50b_cwfjao.jpg`} alt={job.jobTitle} className="object-cover w-auto h-[56px] rounded-xl" />
                 </div>
                 <div className="flex flex-col justify-between py-1">
                   <div className="text-wrap text-[12px] w-[111px]">{job.jobTitle}</div>
