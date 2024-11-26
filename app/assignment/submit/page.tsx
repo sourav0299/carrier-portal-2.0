@@ -334,7 +334,8 @@ const SubmitForm: React.FC = () => {
         </div>
       </div>
       <div className="flex items-center justify-between px-20">
-        <div className="text-[#1e1e1e] opacity-50">@ 2023 Dezainahub! | Need Help?</div>
+        <Tooltip id="support-email" place="top" style={{ zIndex: 50 }} />
+        <div className="text-[#1e1e1e] opacity-50">@ 2023 Dezainahub! | <span className="cursor-pointer hover:text-blue-600" data-tooltip-id="support-email" data-tooltip-content="divyankit@dezainahub.com">Need Help?</span></div>
         <div className="flex gap-3">
           <button onClick={() => window.open('https://www.instagram.com/dezainahub_?igsh=MWY3NzgxYWd4b3Q2', '_blank')} className="bg-[#1e1e1e] rounded-full w-[27px] h-[27px] flex items-center justify-center">
             <span className="text-white">
