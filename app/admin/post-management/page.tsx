@@ -16,6 +16,8 @@ interface Job {
 const PostManagement = () => {
   const [jobs, setJobs] = useState<Job[]>([])
   const [loading, setLoading] = useState(true)
+  const [showModal, setShowModal] = useState(false)
+  const [jobToDelete, setJobToDelete] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -57,10 +59,16 @@ const PostManagement = () => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    console.log('Attempting to delete job with id:', id);
+  const confirmDelete = (id: string) => {
+    setJobToDelete(id);
+    setShowModal(true);
+  };
+
+  const handleDelete = async () => {
+    if (!jobToDelete) return;
+
     try {
-      const response = await fetch(`/api/jobs/${id}`, {
+      const response = await fetch(`/api/jobs/${jobToDelete}`, {
         method: 'DELETE',
       });
   
@@ -70,11 +78,14 @@ const PostManagement = () => {
       }
   
       const data = await response.json();
-      setJobs(jobs.filter(job => job.id !== id));
+      setJobs(jobs.filter(job => job.id !== jobToDelete));
       toast.success(data.message || 'Job deleted successfully');
     } catch (error) {
       console.error('Error deleting job:', error);
       toast.error(error instanceof Error ? error.message : 'Failed to delete job');
+    } finally {
+      setShowModal(false);
+      setJobToDelete(null);
     }
   };
 
@@ -99,21 +110,44 @@ const PostManagement = () => {
               <p className="mt-2">Salary - {job.ctc}</p>
               <div className="flex gap-3">
                 <button
-                onClick={() => handleEdit(job.id)}
-                className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(job.id)}
-                className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              >
-                Delete
-              </button>
+                  onClick={() => handleEdit(job.id)}
+                  className="mt-2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Edit
+                </button>
+                <button
+                  onClick={() => confirmDelete(job.id)}
+                  className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                >
+                  Delete
+                </button>
               </div>
             </li>
           ))}
         </ul>
+      )}
+
+      {showModal && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center">
+          <div className="bg-white p-5 rounded-lg shadow-lg">
+            <h2 className="text-xl mb-4">Confirm Deletion</h2>
+            <p>Are you sure you want to delete this job?</p>
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setShowModal(false)}
+                className="mr-2 px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )
