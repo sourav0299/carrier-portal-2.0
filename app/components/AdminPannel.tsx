@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { auth } from '../firebase';
 import { User, onAuthStateChanged } from "firebase/auth";
 import toast from 'react-hot-toast';
+import Loader from './Loader';
 
 interface Job {
   id?: string;
