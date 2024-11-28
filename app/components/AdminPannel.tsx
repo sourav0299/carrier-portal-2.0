@@ -120,7 +120,7 @@ const AdminPanel: React.FC = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader /> ;
 
   return (
     <div className="max-w-4xl mx-auto p-4">

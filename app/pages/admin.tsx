@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "../firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
+import Loader from "../components/Loader";
 
 const AdminPage = () => {
   const [loading, setLoading] = useState(true);
@@ -29,7 +30,7 @@ const AdminPage = () => {
     return () => unsubscribe();
   }, [router]);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
 
   if (!user) return null; 
 

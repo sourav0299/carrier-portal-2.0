@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation'
 import { onAuthStateChanged, User } from 'firebase/auth'
 import { auth } from '../../firebase'
 import toast, { Toaster } from 'react-hot-toast'
+import Loader from '@/app/components/Loader'
 
 interface Job {
   id: string;
@@ -77,7 +78,7 @@ const PostManagement = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>
+  if (loading) return <Loader/>
 
   return (
     <div className="container mx-auto p-4">

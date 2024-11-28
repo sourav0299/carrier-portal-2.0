@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { TbEyeHeart } from "react-icons/tb";
+import Loader from './components/Loader';
 
 interface Job {
   date: string | number | Date;
@@ -89,7 +90,7 @@ const JobsPage: React.FC = () => {
     return sortOrder === 'newest'? dataB - dataA : dataA - dataB;
   })
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loader/>;
   if (error) return <div>Error: {error}</div>;
 
   return (

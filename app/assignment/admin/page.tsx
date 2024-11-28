@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, User } from "firebase/auth";
 import toast, { Toaster } from 'react-hot-toast';
+import Loader from '../../components/Loader'
 
 interface Assignment {
   _id: string;
@@ -95,7 +96,7 @@ const AdminPage: React.FC = () => {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loader />;
 
   if (!user) return null;
 

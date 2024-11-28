@@ -8,6 +8,7 @@ import { IoShareSocialSharp } from "react-icons/io5";
 import  ApplicationModal  from '../../components/ApplicationModal'
 import { auth } from '../../firebase'
 import { User } from 'firebase/auth';
+import Loader from '@/app/components/Loader';
 
 interface Job {
   id: string;
@@ -91,7 +92,7 @@ const JobDescriptionPage: React.FC = () => {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <Loader /> ;
   if (error) return <div>Error: {error}</div>;
   if (!job) return <div>Job not found</div>;
 
