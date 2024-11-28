@@ -50,7 +50,7 @@ const NavBar = () => {
           <div>
             {user ? (
               <div className="flex items-center space-x-4">
-                <div className="w-[60px] h-[60px] rounded overflow-hidden bg-gray-200">
+                <div className="w-[60px] h-[60px] rounded-full overflow-hidden bg-gray-200">
                   <Image
                     src={user.photoURL || 'https://via.placeholder.com/60x60?text=User'}
                     alt={user.displayName || "User"}
