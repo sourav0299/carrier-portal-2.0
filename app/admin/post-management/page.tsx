@@ -78,6 +78,10 @@ const PostManagement = () => {
     }
   };
 
+  const handleEdit = (id: string) => { 
+    router.push(`/admin/job/edit/${id}`);
+  }
+
   if (loading) return <Loader/>
 
   return (
@@ -93,12 +97,20 @@ const PostManagement = () => {
               <h2 className="text-xl font-semibold">Title - {job.jobTitle}</h2>
               <p className="mt-2">Description - {job.shortDesciption}</p>
               <p className="mt-2">Salary - {job.ctc}</p>
+              <div className="flex gap-3">
+                <button
+                onClick={() => handleEdit(job.id)}
+                className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Edit
+              </button>
               <button
                 onClick={() => handleDelete(job.id)}
                 className="mt-2 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
               >
                 Delete
               </button>
+              </div>
             </li>
           ))}
         </ul>
