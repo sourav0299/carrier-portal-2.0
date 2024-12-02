@@ -39,6 +39,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
   const circumference = 2 * Math.PI * radius;
   const dashoffset = useTransform(progress, (p) => circumference * (1 - p));
   const remainingCharacters = maxLetters - characterCount;
+  const [isEmailTaken, setIsEmailTaken] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputText = event.target.value;
@@ -56,10 +57,29 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
           email: user.email || '',
           phoneNumber: user.phoneNumber || ''
         }));
+        if (user.email) {
+          checkExistingApplication(user.email);
+        }
       }
     });
     return () => unsubscribe && unsubscribe();
   }, []);
+
+  const checkExistingApplication = async (email: string) => {
+    try {
+      const response = await fetch(`/api/check-applications?email=${encodeURIComponent(email)}`);
+      if (!response.ok) {
+        throw new Error('Failed to check existing application');
+      }
+      const data = await response.json();
+      setIsEmailTaken(data.exists);
+      if (data.exists) {
+        toast.error('You have already applied for this position.');
+      }
+    } catch (error) {
+      console.error('Error checking existing application:', error);
+    }
+  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -81,7 +101,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitDisabled) return;
+    if (isSubmitDisabled || isEmailTaken) return;
   
     try {
       let resumeUrl = '';
@@ -130,7 +150,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
       toast.error('Failed to submit application. Please try again.');
     }
   };
-  const isSubmitDisabled = remainingCharacters < -20;
+  const isSubmitDisabled = remainingCharacters < -20 || isEmailTaken;
 
   if (!isOpen) return null;
 
@@ -247,9 +267,12 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
             <div className="py-3 mt-4 flex">
               <button
                 type="submit"
-                className="py-2 px-6 bg-[#1e1e1e] text-white text-base font-medium rounded-md w-[203px] h-[59px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] hover:opacity-80 transition-opacity duration-300"
+                className={`py-2 px-6 bg-[#1e1e1e] text-white text-base font-medium rounded-md w-[203px] h-[59px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] hover:opacity-80 transition-opacity duration-300
+                  ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`
+                }
+                disabled={isSubmitDisabled}
               >
-                Apply
+                {isEmailTaken ? 'Applied' : 'Apply'}
               </button>
             </div>
           </form>
