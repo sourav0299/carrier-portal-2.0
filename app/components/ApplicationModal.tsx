@@ -4,6 +4,7 @@ import { User } from 'firebase/auth';
 import { MdDelete, MdClose, MdOutlineFileUpload } from "react-icons/md";
 import { motion, useMotionValue, useTransform } from 'framer-motion';
 import toast, { Toaster } from "react-hot-toast";
+import { Tooltip } from 'react-tooltip';
 
 interface FormData {
   name: string;
@@ -108,7 +109,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
       if (formData.resume) {
         const cloudinaryFormData = new FormData();
         cloudinaryFormData.append('file', formData.resume);
-        cloudinaryFormData.append('upload_preset', 'sourav0299'); // Using the new upload preset
+        cloudinaryFormData.append('upload_preset', 'sourav0299');
   
         const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/upload`, {
           method: 'POST',
@@ -149,6 +150,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
       console.error('Error submitting application:', error);
       toast.error('Failed to submit application. Please try again.');
     }
+    setIsEmailTaken(true)
   };
   const isSubmitDisabled = remainingCharacters < -20 || isEmailTaken;
 
@@ -166,72 +168,118 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
           <MdClose className="w-6 h-6" />
         </button>
         <div className="mt-3 text-center">
-          <h3 className="text-3xl leading-6 font-medium text-gray-900">Want to join our team?</h3>
-          <h3 className="text-sm leading-6 text-gray-900 my-2">Your talent could be the next big thing we’re waiting for.</h3>
+          <h3 className="text-3xl leading-6 font-medium text-gray-900">
+            Want to join our team?
+          </h3>
+          <h3 className="text-sm leading-6 text-gray-900 my-2">
+            Your talent could be the next big thing we’re waiting for.
+          </h3>
           <form onSubmit={handleSubmit} className="mt-2 mx-5">
             <div className="grid grid-cols-2 gap-8 mt-4">
-              {['name', 'email', 'phoneNumber', 'portfolio'].map((field) => (
+              {["name", "email", "phoneNumber", "portfolio"].map((field) => (
                 <div key={field} className="flex flex-col">
-                  <label htmlFor={field} className="text-left text-sm font-medium text-gray-700 mb-1">
-                    {field === 'name' ? 'Full Name' : 
-                     field === 'portfolio' ? 'Portfolio Link' : 
-                     field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                  <label
+                    htmlFor={field}
+                    className="text-left text-sm font-medium text-gray-700 mb-1"
+                  >
+                    {field === "name"
+                      ? "Full Name"
+                      : field === "portfolio"
+                      ? "Portfolio Link"
+                      : field.charAt(0).toUpperCase() +
+                        field.slice(1).replace(/([A-Z])/g, " $1")}
                   </label>
                   <input
                     id={field}
-                    type={field === 'email' ? 'email' : field === 'phoneNumber' ? 'tel' : 'text'}
+                    type={
+                      field === "email"
+                        ? "email"
+                        : field === "phoneNumber"
+                        ? "tel"
+                        : "text"
+                    }
                     name={field}
                     value={formData[field as keyof FormData] as string}
-                    placeholder={field === 'phoneNumber' ? 'Enter full number with country code' : 
-                                 field === 'portfolio' ? 'Enter your portfolio URL' :
-                                 field.charAt(0).toUpperCase() + field.slice(1).replace(/([A-Z])/g, ' $1')}
+                    placeholder={
+                      field === "phoneNumber"
+                        ? "Enter full number with country code"
+                        : field === "portfolio"
+                        ? "Enter your portfolio URL"
+                        : field.charAt(0).toUpperCase() +
+                          field.slice(1).replace(/([A-Z])/g, " $1")
+                    }
                     onChange={handleInputChange}
-                    className={`w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300 ${field === 'email' ? 'cursor-not-allowed' : ''}`}
+                    className={`w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300 ${
+                      field === "email" ? "cursor-not-allowed" : ""
+                    }`}
                     required
-                    disabled={field === 'email'}
+                    disabled={field === "email"}
                   />
                 </div>
               ))}
               <div className="">
-              <label htmlFor="position" className="block text-left text-sm font-medium text-gray-700 mb-1">
-                Job Position
-              </label>
-              <input
-                id="position"
-                type="text"
-                name="position"
-                placeholder="Job Position"
-                className="cursor-not-allowed w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
-                value={jobTitle}
-                disabled
-              />
+                <label
+                  htmlFor="position"
+                  className="block text-left text-sm font-medium text-gray-700 mb-1"
+                >
+                  Job Position
+                </label>
+                <input
+                  id="position"
+                  type="text"
+                  name="position"
+                  placeholder="Job Position"
+                  className="cursor-not-allowed w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
+                  value={jobTitle}
+                  disabled
+                />
               </div>
               <div className="">
-              <label htmlFor="experience" className="block text-left text-sm font-medium text-gray-700 mb-1">
-                Job Experience
-              </label>
-              <input
-                id="experience"
-                type="text"
-                name="experience"
-                placeholder="Job Relevent Experience"
-                value={formData.experience}
-                onChange={handleInputChange}
-                className="w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
-              />
+                <label
+                  htmlFor="experience"
+                  className="block text-left text-sm font-medium text-gray-700 mb-1"
+                >
+                  Job Experience
+                </label>
+                <input
+                  id="experience"
+                  type="text"
+                  name="experience"
+                  placeholder="Job Relevent Experience"
+                  value={formData.experience}
+                  onChange={handleInputChange}
+                  className="w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
+                />
               </div>
             </div>
-            
+
             <div className="mt-4">
-              <label htmlFor="resumeUpload" className="block text-left text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="resumeUpload"
+                className="block text-left text-sm font-medium text-gray-700 mb-1"
+              >
                 Upload Resume
               </label>
               <div className="relative">
-                <label htmlFor="resumeUpload" className="flex items-center justify-center w-full h-16 border-2 border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none px-4">
+                <label
+                  htmlFor="resumeUpload"
+                  className="flex items-center justify-center w-full h-16 border-2 border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-pointer hover:bg-gray-100 focus:ring-2 focus:ring-blue-500 focus:outline-none px-4"
+                >
                   {formData.resume ? (
                     <span className="flex items-center gap-2 truncate">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 text-green-500 flex-shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M5 13l4 4L19 7"
+                        />
                       </svg>
                       <span className="truncate">{formData.resume.name}</span>
                     </span>
@@ -265,31 +313,55 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
               </div>
             </div>
             <div className="py-3 mt-4 flex">
+              <Tooltip id="submit-tooltip" place="top" style={{ zIndex: 50 }} />
               <button
                 type="submit"
                 className={`py-2 px-6 bg-[#1e1e1e] text-white text-base font-medium rounded-md w-[203px] h-[59px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] hover:opacity-80 transition-opacity duration-300
-                  ${isSubmitDisabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`
-                }
+                  ${
+                    isSubmitDisabled
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-[#1E1E1E]"
+                  }`}
                 disabled={isSubmitDisabled}
+                data-tooltip-id="submit-tooltip"
+                data-tooltip-content="You have already submitted application. Only one submission is allowed."
               >
-                {isEmailTaken ? 'Applied' : 'Apply'}
+                {isEmailTaken ? "Applied" : "Apply"}
               </button>
             </div>
           </form>
           <div className="absolute bottom-0 right-0">
-          <div className="relative w-[105px] h-[78px]">
-            <div className="absolute bottom-0 right-0 z-10">
-              <svg width="105" height="78" viewBox="0 0 105 78" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="72.585" cy="72.5069" r="72.4932" fill="#1E1E1E"/>
-              </svg>
-            </div>
-            <div className="absolute -top-5 -left-4 z-20">
-              <svg width="75" height="75" viewBox="0 0 75 75" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="37.1898" cy="37.1898" r="37.1898" fill="#484848" fillOpacity="0.5"/>
-              </svg>
+            <div className="relative w-[105px] h-[78px]">
+              <div className="absolute bottom-0 right-0 z-10">
+                <svg
+                  width="105"
+                  height="78"
+                  viewBox="0 0 105 78"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle cx="72.585" cy="72.5069" r="72.4932" fill="#1E1E1E" />
+                </svg>
+              </div>
+              <div className="absolute -top-5 -left-4 z-20">
+                <svg
+                  width="75"
+                  height="75"
+                  viewBox="0 0 75 75"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <circle
+                    cx="37.1898"
+                    cy="37.1898"
+                    r="37.1898"
+                    fill="#484848"
+                    fillOpacity="0.5"
+                  />
+                </svg>
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </div>
