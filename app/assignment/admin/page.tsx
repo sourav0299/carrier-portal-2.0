@@ -113,7 +113,7 @@ const AdminPage: React.FC = () => {
                 <th className="py-3 px-6 text-left">Phone</th>
               <th className="py-3 px-6 text-left">Position</th>
               <th className="py-3 px-6 text-left">Figma Link</th>
-              <th className="py-3 px-6 text-left">Google Drive Link</th>
+              <th className="py-3 px-6 text-left">Assignment Link</th>
               <th className="py-3 px-6 text-left">Submitted At</th>
               <th className="py-3 px-6 text-left">Actions</th>
             </tr>
@@ -135,7 +135,7 @@ const AdminPage: React.FC = () => {
                 <td className="py-3 px-6 text-left">
                   {assignment.googleDriveLink && (
                     <a href={assignment.googleDriveLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
-                      View Drive
+                      View Assignment
                     </a>
                   )}
                 </td>
