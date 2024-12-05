@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { auth } from "../firebase";
 import { User } from "firebase/auth";
 import { MdDelete, MdClose, MdOutlineFileUpload } from "react-icons/md";
@@ -49,6 +49,7 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
   const dashoffset = useTransform(progress, (p) => circumference * (1 - p));
   const remainingCharacters = maxLetters - characterCount;
   const [isEmailTaken, setIsEmailTaken] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     const inputText = event.target.value;
@@ -112,11 +113,13 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitDisabled || isEmailTaken) return;
+    if (isEmailTaken || isSubmitting) return;
 
-    try {
+    setIsSubmitting(true);
+
+    const submitApplication = async () => {
       let resumeUrl = "";
       if (formData.resume) {
         const cloudinaryFormData = new FormData();
@@ -157,17 +160,31 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
         throw new Error("Failed to submit application");
       }
 
-      toast.success("Application submitted successfully");
+      return "Application submitted successfully";
+    };
+
+    try {
+      await toast.promise(
+        submitApplication(),
+        {
+          loading: 'Submitting application...',
+          success: <b>Application submitted successfully!</b>,
+          error: <b>Failed to submit application. Please try again.</b>,
+        }
+      );
+
+      setIsEmailTaken(true);
       setTimeout(() => {
         onClose();
       }, 2000);
     } catch (error) {
       console.error("Error submitting application:", error);
-      toast.error("Failed to submit application. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-    setIsEmailTaken(true);
-  };
-  const isSubmitDisabled = remainingCharacters < -20 || isEmailTaken;
+  }, [ isEmailTaken, isSubmitting, onClose, formData, jobTitle]);
+  
+  const isButtonDisabled = isEmailTaken || isSubmitting;
 
   if (!isOpen) return null;
 
@@ -332,21 +349,26 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
               <button
                 type="submit"
                 className={`py-2 px-6 bg-[#1e1e1e] text-white text-base font-medium rounded-md w-[203px] h-[59px] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#1e1e1e] hover:opacity-80 transition-opacity duration-300
-                  ${
-                    isSubmitDisabled
-                      ? "opacity-50 cursor-not-allowed"
-                      : "hover:bg-[#1E1E1E]"
-                  }`}
-                disabled={isSubmitDisabled}
-                {...(isSubmitDisabled
+        ${
+          isButtonDisabled
+            ? "opacity-50 cursor-not-allowed"
+            : "hover:bg-[#1E1E1E]"
+        }`}
+                disabled={isButtonDisabled}
+                {...(isButtonDisabled
                   ? {
                       "data-tooltip-id": "submit-tooltip",
-                      "data-tooltip-content":
-                        "You have already submitted an application. Only one submission is allowed.",
+                      "data-tooltip-content": isSubmitting
+                        ? "Application is being submitted. Please wait..."
+                        : "You have already submitted an application. Only one submission is allowed.",
                     }
                   : {})}
               >
-                {isEmailTaken ? "Applied" : "Apply"}
+                {isEmailTaken
+                  ? "Applied"
+                  : isSubmitting
+                  ? "Submitting..."
+                  : "Apply"}
               </button>
             </div>
           </form>
