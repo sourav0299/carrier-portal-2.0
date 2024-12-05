@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { auth } from '../firebase';
-import { User } from 'firebase/auth';
+import { useState, useEffect } from "react";
+import { auth } from "../firebase";
+import { User } from "firebase/auth";
 import { MdDelete, MdClose, MdOutlineFileUpload } from "react-icons/md";
-import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useTransform } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
-import { Tooltip } from 'react-tooltip';
+import { Tooltip } from "react-tooltip";
 
 interface FormData {
   name: string;
@@ -21,21 +21,29 @@ interface ApplicationModalProps {
   jobTitle: string;
 }
 
-const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jobTitle }) => {
+const ApplicationModal: React.FC<ApplicationModalProps> = ({
+  isOpen,
+  onClose,
+  jobTitle,
+}) => {
   const maxLetters = 300;
   const [formData, setFormData] = useState<FormData>({
-    name: '',
-    email: '',
-    phoneNumber: '',
+    name: "",
+    email: "",
+    phoneNumber: "",
     resume: null,
-    experience: '',
-    portfolio: ''
+    experience: "",
+    portfolio: "",
   });
-  const [text, setText] = useState('');
+  const [text, setText] = useState("");
   const characterCount = text.length;
 
   const progress = useMotionValue(characterCount / maxLetters);
-  const color = useTransform(progress, [0, (maxLetters - 20) / maxLetters, 1], ['#3b82f6', '#fbbf24', '#ef4444']);
+  const color = useTransform(
+    progress,
+    [0, (maxLetters - 20) / maxLetters, 1],
+    ["#3b82f6", "#fbbf24", "#ef4444"]
+  );
   const radius = 45;
   const circumference = 2 * Math.PI * radius;
   const dashoffset = useTransform(progress, (p) => circumference * (1 - p));
@@ -54,9 +62,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
       if (user) {
         setFormData((prev) => ({
           ...prev,
-          name: user.displayName || '',
-          email: user.email || '',
-          phoneNumber: user.phoneNumber || ''
+          name: user.displayName || "",
+          email: user.email || "",
+          phoneNumber: user.phoneNumber || "",
         }));
         if (user.email) {
           checkExistingApplication(user.email);
@@ -68,89 +76,96 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
 
   const checkExistingApplication = async (email: string) => {
     try {
-      const response = await fetch(`/api/check-applications?email=${encodeURIComponent(email)}`);
+      const response = await fetch(
+        `/api/check-applications?email=${encodeURIComponent(email)}`
+      );
       if (!response.ok) {
-        throw new Error('Failed to check existing application');
+        throw new Error("Failed to check existing application");
       }
       const data = await response.json();
       setIsEmailTaken(data.exists);
       if (data.exists) {
-        toast.error('You have already applied for this position.');
+        toast.error("You have already applied for this position.");
       }
     } catch (error) {
-      console.error('Error checking existing application:', error);
+      console.error("Error checking existing application:", error);
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
- const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-   if (e.target.files && e.target.files.length > 0) {
-     const file = e.target.files[0];
-     
-     if (file.type !== 'application/pdf') {
-       toast.error('Please upload a PDF file');
-       return;
-     }
- 
-     setFormData((prev) => ({ ...prev, resume: file }));
-   }
- };
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+
+      if (file.type !== "application/pdf") {
+        toast.error("Please upload a PDF file");
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, resume: file }));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitDisabled || isEmailTaken) return;
-  
+
     try {
-      let resumeUrl = '';
+      let resumeUrl = "";
       if (formData.resume) {
         const cloudinaryFormData = new FormData();
-        cloudinaryFormData.append('file', formData.resume);
-        cloudinaryFormData.append('upload_preset', 'sourav0299');
-  
-        const cloudinaryResponse = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/upload`, {
-          method: 'POST',
-          body: cloudinaryFormData,
-        });
-  
+        cloudinaryFormData.append("file", formData.resume);
+        cloudinaryFormData.append("upload_preset", "sourav0299");
+
+        const cloudinaryResponse = await fetch(
+          `https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/raw/upload`,
+          {
+            method: "POST",
+            body: cloudinaryFormData,
+          }
+        );
+
         if (!cloudinaryResponse.ok) {
-          throw new Error('Failed to upload file to Cloudinary');
+          throw new Error("Failed to upload file to Cloudinary");
         }
-  
+
         const cloudinaryData = await cloudinaryResponse.json();
         resumeUrl = cloudinaryData.secure_url;
       }
-  
+
       const applicationData = {
         ...formData,
         jobTitle,
         resumeUrl,
       };
-  
-      const response = await fetch('/api/applications', {
-        method: 'POST',
+
+      const response = await fetch("/api/applications", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(applicationData),
       });
-  
+
       if (!response.ok) {
-        throw new Error('Failed to submit application');
+        throw new Error("Failed to submit application");
       }
-  
-      toast.success('Application submitted successfully');
-    setTimeout(() => {
-      onClose();
-    }, 2000);
+
+      toast.success("Application submitted successfully");
+      setTimeout(() => {
+        onClose();
+      }, 2000);
     } catch (error) {
-      console.error('Error submitting application:', error);
-      toast.error('Failed to submit application. Please try again.');
+      console.error("Error submitting application:", error);
+      toast.error("Failed to submit application. Please try again.");
     }
-    setIsEmailTaken(true)
+    setIsEmailTaken(true);
   };
   const isSubmitDisabled = remainingCharacters < -20 || isEmailTaken;
 
@@ -323,8 +338,13 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose, jo
                       : "hover:bg-[#1E1E1E]"
                   }`}
                 disabled={isSubmitDisabled}
-                data-tooltip-id="submit-tooltip"
-                data-tooltip-content="You have already submitted application. Only one submission is allowed."
+                {...(isSubmitDisabled
+                  ? {
+                      "data-tooltip-id": "submit-tooltip",
+                      "data-tooltip-content":
+                        "You have already submitted an application. Only one submission is allowed.",
+                    }
+                  : {})}
               >
                 {isEmailTaken ? "Applied" : "Apply"}
               </button>
