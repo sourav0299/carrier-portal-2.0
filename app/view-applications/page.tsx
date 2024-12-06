@@ -109,6 +109,12 @@ const AdminApplicationPage: React.FC = () => {
     }
   };
 
+  const sortedApplications = [...applications].sort((a, b) => {
+    return (
+      new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+    );
+  });
+
   if (loading) return <Loader />;
 
   if (!user) return null;
@@ -133,7 +139,7 @@ const AdminApplicationPage: React.FC = () => {
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
-            {applications.map((application) => (
+            {sortedApplications.map((application) => (
               <tr
                 key={application._id}
                 className="border-b border-gray-200 hover:bg-gray-100"
