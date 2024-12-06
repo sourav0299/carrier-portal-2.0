@@ -100,6 +100,12 @@ const AdminPage: React.FC = () => {
 
   if (!user) return null;
 
+  const sortedAssignments = [...assignments].sort((a, b) => {
+    return (
+      new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
+    );
+  });
+
   return (
     <div className="container mx-auto p-4">
       <Toaster />
@@ -119,7 +125,7 @@ const AdminPage: React.FC = () => {
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
-            {assignments.map((assignment) => (
+            {sortedAssignments.map((assignment) => (
               <tr key={assignment._id} className="border-b border-gray-200 hover:bg-gray-100">
                 <td className="py-3 px-6 text-left whitespace-nowrap">{assignment.name}</td>
                 <td className="py-3 px-6 text-left">{assignment.email}</td>
