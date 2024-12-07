@@ -6,6 +6,7 @@ import { auth } from "../firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import toast, { Toaster } from "react-hot-toast";
 import Loader from "../components/Loader";
+import ResumeViewer from "../components/ViewResume";
 
 interface Application {
   _id: string;
@@ -23,6 +24,7 @@ const AdminApplicationPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [applications, setApplications] = useState<Application[]>([]);
+  const [selectedResume, setSelectedResume] = useState<string | null>(null);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [applicationToDelete, setApplicationToDelete] = useState<string | null>(
     null
@@ -80,6 +82,14 @@ const AdminApplicationPage: React.FC = () => {
   const closeConfirmDialog = () => {
     setShowConfirmDialog(false);
     setApplicationToDelete(null);
+  };
+
+  const openResumeViewer = (resumeUrl: string) => {
+    setSelectedResume(resumeUrl);
+  };
+
+  const closeResumeViewer = () => {
+    setSelectedResume(null);
   };
 
   const handleDelete = async () => {
@@ -166,14 +176,12 @@ const AdminApplicationPage: React.FC = () => {
                   </a>
                 </td>
                 <td className="py-3 px-6 text-left">
-                  <a
-                    href={application.resumeUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    onClick={() => openResumeViewer(application.resumeUrl)}
                     className="text-blue-600 hover:text-blue-800"
                   >
                     View Resume
-                  </a>
+                  </button>
                 </td>
                 <td className="py-3 px-6 text-left">
                   {new Date(application.submittedAt).toLocaleString()}
@@ -226,6 +234,9 @@ const AdminApplicationPage: React.FC = () => {
             </div>
           </div>
         </div>
+      )}
+      {selectedResume && (
+        <ResumeViewer resumeUrl={selectedResume} onClose={closeResumeViewer} />
       )}
     </div>
   );
