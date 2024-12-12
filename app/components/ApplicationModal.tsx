@@ -275,9 +275,9 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                 </label>
                 <input
                   id="experience"
-                  type="text"
+                  type="number"
                   name="experience"
-                  placeholder="Job Relevent Experience"
+                  placeholder="eg. 5+"
                   value={formData.experience}
                   onChange={handleInputChange}
                   className="w-full p-2 border-b-2 border-[#8d8d8d] focus:outline-none focus:border-black transition-colors duration-300"
