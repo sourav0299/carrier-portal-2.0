@@ -49,24 +49,32 @@ const NavBar = () => {
         <div className="flex items-center justify-center gap-5">
           <div>
             {user ? (
-              <div className="flex items-center space-x-4">
-                <div className="w-[60px] h-[60px] rounded-full overflow-hidden bg-gray-200">
-                  <Image
-                    src={user.photoURL || 'https://via.placeholder.com/60x60?text=User'}
-                    alt={user.displayName || "User"}
-                    width={60}
-                    height={60}
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-[#9c9ca3]">Welcome,</span>
-                  <span className="">{user.displayName || user.email}</span>
+              <div className="flex items-center space-x-4 gap-3">
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-[60px] h-[60px] rounded-full overflow-hidden bg-gray-200">
+                    <Image
+                      src={
+                        user.photoURL ||
+                        "https://via.placeholder.com/60x60?text=User"
+                      }
+                      alt={user.displayName || "User"}
+                      width={60}
+                      height={60}
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[#9c9ca3]">Welcome,</span>
+                    <span className="">{user.displayName || user.email}</span>
+                  </div>
                 </div>
                 <LogoutButton />
               </div>
             ) : (
-              <Link href="/login" className="bg-white text-[#1e1e1e] rounded-md px-4 py-2 font-bold">
+              <Link
+                href="/login"
+                className="bg-white text-[#1e1e1e] rounded-md px-4 py-2 font-bold"
+              >
                 Log In
               </Link>
             )}

@@ -3,6 +3,7 @@
 import { signOut, Auth } from "firebase/auth";
 import { useRouter } from 'next/navigation';
 import { auth } from "../firebase";
+import { LuLogOut } from "react-icons/lu";
 
 const LogoutButton = () => {
   const router = useRouter();
@@ -23,8 +24,12 @@ const LogoutButton = () => {
   };
 
   return (
-    <button className="bg-red-500 text-white p-2 rounded" onClick={handleLogout}>
-      Logout
+    <button
+      className=" text-[#FF7B7B] flex items-center justify-center gap-3"
+      onClick={handleLogout}
+    >
+      <LuLogOut />
+      Log Out
     </button>
   );
 };
