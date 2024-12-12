@@ -11,19 +11,20 @@ interface Assignment {
   _id: string;
   name: string;
   email: string;
-    phone: string;
-    position: string;
+  phone: string;
+  position: string;
   figmaLink?: string;
   googleDriveLink?: string;
   submittedAt: string;
 }
 
 const AdminPage: React.FC = () => {
-    const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [assignmentToDelete, setAssignmentToDelete] = useState<string | null>(null);
+  const [selectedAssignments, setSelectedAssignments] = useState<string[]>([]);
   const router = useRouter();
 
   useEffect(() => {
@@ -96,6 +97,43 @@ const AdminPage: React.FC = () => {
     }
   };
 
+    const handleSelectAssignment = (id: string) => {
+    setSelectedAssignments(prev => 
+      prev.includes(id) ? prev.filter(assignmentId => assignmentId !== id) : [...prev, id]
+    );
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedAssignments.length === 0) {
+      toast.error("No assignments selected");
+      return;
+    }
+    try {
+      const response = await fetch("/api/assignments/bulk-delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: selectedAssignments }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete assignments");
+      }
+
+      toast.success("Selected assignments deleted successfully");
+      setAssignments(
+        assignments.filter(
+          (assignment) => !selectedAssignments.includes(assignment._id)
+        )
+      );
+      setSelectedAssignments([]);
+    } catch (error) {
+      console.error("Error deleting assignments:", error);
+      toast.error("Failed to delete assignments");
+    }
+  };
+
   if (loading) return <Loader />;
 
   if (!user) return null;
@@ -109,14 +147,24 @@ const AdminPage: React.FC = () => {
   return (
     <div className="container mx-auto p-4">
       <Toaster />
-      <h1 className="text-2xl font-bold mb-4">Admin Page - Assignment Submissions</h1>
+      <h1 className="text-2xl font-bold mb-4">
+        Admin Page - Assignment Submissions
+      </h1>
+      <button
+        onClick={handleBulkDelete}
+        className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4"
+        disabled={selectedAssignments.length === 0}
+      >
+        Delete Selected ({selectedAssignments.length})
+      </button>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th className="py-3 px-6 text-left">Select</th>
               <th className="py-3 px-6 text-left">Name</th>
               <th className="py-3 px-6 text-left">Email</th>
-                <th className="py-3 px-6 text-left">Phone</th>
+              <th className="py-3 px-6 text-left">Phone</th>
               <th className="py-3 px-6 text-left">Position</th>
               <th className="py-3 px-6 text-left">Figma Link</th>
               <th className="py-3 px-6 text-left">Assignment Link</th>
@@ -126,26 +174,51 @@ const AdminPage: React.FC = () => {
           </thead>
           <tbody className="text-gray-600 text-sm font-light">
             {sortedAssignments.map((assignment) => (
-              <tr key={assignment._id} className="border-b border-gray-200 hover:bg-gray-100">
-                <td className="py-3 px-6 text-left whitespace-nowrap">{assignment.name}</td>
+              <tr
+                key={assignment._id}
+                className="border-b border-gray-200 hover:bg-gray-100"
+              >
+                <td className="py-3 px-6 text-left">
+                  <input
+                    type="checkbox"
+                    checked={selectedAssignments.includes(assignment._id)}
+                    onChange={() => handleSelectAssignment(assignment._id)}
+                  />
+                </td>
+                <td className="py-3 px-6 text-left whitespace-nowrap">
+                  {assignment.name}
+                </td>
+
                 <td className="py-3 px-6 text-left">{assignment.email}</td>
-                    <td className="py-3 px-6 text-left">{assignment.phone}</td>
+                <td className="py-3 px-6 text-left">{assignment.phone}</td>
                 <td className="py-3 px-6 text-left">{assignment.position}</td>
                 <td className="py-3 px-6 text-left">
                   {assignment.figmaLink && (
-                    <a href={assignment.figmaLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                    <a
+                      href={assignment.figmaLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
                       View Figma
                     </a>
                   )}
                 </td>
                 <td className="py-3 px-6 text-left">
                   {assignment.googleDriveLink && (
-                    <a href={assignment.googleDriveLink} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-800">
+                    <a
+                      href={assignment.googleDriveLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800"
+                    >
                       View Assignment
                     </a>
                   )}
                 </td>
-                <td className="py-3 px-6 text-left">{new Date(assignment.submittedAt).toLocaleString()}</td>
+                <td className="py-3 px-6 text-left">
+                  {new Date(assignment.submittedAt).toLocaleString()}
+                </td>
                 <td className="py-3 px-6 text-left">
                   <button
                     onClick={() => openConfirmDialog(assignment._id)}
@@ -158,15 +231,21 @@ const AdminPage: React.FC = () => {
             ))}
           </tbody>
         </table>
-          </div>
-           {showConfirmDialog && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="my-modal">
+      </div>
+      {showConfirmDialog && (
+        <div
+          className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full"
+          id="my-modal"
+        >
           <div className="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div className="mt-3 text-center">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">Delete Assignment</h3>
+              <h3 className="text-lg leading-6 font-medium text-gray-900">
+                Delete Assignment
+              </h3>
               <div className="mt-2 px-7 py-3">
                 <p className="text-sm text-gray-500">
-                  Are you sure you want to delete this assignment? This action cannot be undone.
+                  Are you sure you want to delete this assignment? This action
+                  cannot be undone.
                 </p>
               </div>
               <div className="items-center px-4 py-3">
