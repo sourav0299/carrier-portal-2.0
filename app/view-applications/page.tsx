@@ -29,6 +29,9 @@ const AdminApplicationPage: React.FC = () => {
   const [applicationToDelete, setApplicationToDelete] = useState<string | null>(
     null
   );
+  const [selectedApplications, setSelectedApplications] = useState<string[]>(
+    []
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -119,6 +122,51 @@ const AdminApplicationPage: React.FC = () => {
     }
   };
 
+  const handleSelectApplication = (id: string) => {
+    setSelectedApplications((prev) =>
+      prev.includes(id) ? prev.filter((appId) => appId !== id) : [...prev, id]
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selectedApplications.length === applications.length) {
+      setSelectedApplications([]);
+    } else {
+      setSelectedApplications(applications.map((app) => app._id));
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedApplications.length === 0) return;
+
+    try {
+      const response = await fetch("/api/applications/bulk-delete", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ ids: selectedApplications }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to delete applications");
+      }
+
+      const result = await response.json();
+      toast.success(
+        `Successfully deleted ${result.deletedCount} application(s)`
+      );
+
+      setApplications((prev) =>
+        prev.filter((app) => !selectedApplications.includes(app._id))
+      );
+      setSelectedApplications([]);
+    } catch (error) {
+      console.error("Error deleting applications:", error);
+      toast.error("Failed to delete applications");
+    }
+  };
+
   const sortedApplications = [...applications].sort((a, b) => {
     return (
       new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime()
@@ -129,14 +177,30 @@ const AdminApplicationPage: React.FC = () => {
 
   if (!user) return null;
 
+
+
   return (
     <div className="container mx-auto p-4">
       <Toaster />
       <h1 className="text-2xl font-bold mb-4">Admin Page - Job Applications</h1>
+        <button
+          onClick={handleBulkDelete}
+          className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mb-4"
+        >
+          Delete Selected ({selectedApplications.length})
+        </button>
+
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white">
           <thead>
             <tr className="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+              <th className="py-3 px-6 text-left">
+                <input
+                  type="checkbox"
+                  onChange={handleSelectAll}
+                  checked={selectedApplications.length === applications.length}
+                />
+              </th>
               <th className="py-3 px-6 text-left">Name</th>
               <th className="py-3 px-6 text-left">Email</th>
               <th className="py-3 px-6 text-left">Phone</th>
@@ -154,6 +218,13 @@ const AdminApplicationPage: React.FC = () => {
                 key={application._id}
                 className="border-b border-gray-200 hover:bg-gray-100"
               >
+                <td className="py-3 px-6 text-left">
+                  <input
+                    type="checkbox"
+                    onChange={() => handleSelectApplication(application._id)}
+                    checked={selectedApplications.includes(application._id)}
+                  />
+                </td>
                 <td className="py-3 px-6 text-left whitespace-nowrap">
                   {application.name}
                 </td>
