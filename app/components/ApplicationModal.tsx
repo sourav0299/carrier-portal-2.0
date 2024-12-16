@@ -271,11 +271,11 @@ const ApplicationModal: React.FC<ApplicationModalProps> = ({
                   htmlFor="experience"
                   className="block text-left text-sm font-medium text-gray-700 mb-1"
                 >
-                  Job Experience
+                  Job Experience (in years)
                 </label>
                 <input
                   id="experience"
-                  type="number"
+                  type="text"
                   name="experience"
                   placeholder="eg. 5+"
                   value={formData.experience}
