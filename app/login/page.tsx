@@ -42,15 +42,15 @@ const Login = () => {
   return (
     <div className="relative min-h-screen w-full">
       <Toaster position="top-center" reverseOrder={false} />
-      <div className="absolute top-5 left-5">
+      <div className="absolute top-10 left-10">
         <img
           src="https://res.cloudinary.com/dzxx6craw/image/upload/v1734631568/4b9f9453991fbc560058da9bcc0f169e_uwfeie.png"
           alt=""
           className="h-[52px] w-[52px]"
         />
       </div>
-
-        <div className="flex flex-col items-center justify-center gap-2">
+        <div className="flex items-center justify-between min-h-screen pr-5 pl-28 mt-[-10px]">
+          <div className="flex flex-col items-center justify-center gap-2">
         <div className="flex flex-col items-center justify-center text-center gap-5">
           <p className="text-3xl text-[#1e1e1e] font-bold">
             Login to your account
@@ -59,7 +59,7 @@ const Login = () => {
             Begin Your Journey to a Better Experience
           </p>
           <button
-            className="flex border-[3px] px-20 py-2 text-[#2F455C] border-[#2F455C] rounded-full"
+            className="flex border-[3px] px-20 py-2 text-[#2F455C] border-[#2F455C] rounded-[20px]"
             onClick={handleGoogleLogin}
           >
             <div className="flex items-center justify-center gap-2">
@@ -77,6 +77,7 @@ const Login = () => {
           alt="login-img-banner"
         />
       </div>
+        </div>
     </div>
   );
 };
